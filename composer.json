@@ -1,6 +1,7 @@
 {
     "name": "mikevrind/deployer",
-    "description": "Easy deployer for web projects",
+    "description": "Easy deployer for web projects using Gitlab",
+    "keywords": ["laravel", "deployer", "gitlab"],
     "type": "library",
     "license": "MIT",
     "authors": [
