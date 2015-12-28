@@ -1,0 +1,28 @@
+{
+    "name": "mikevrind/deployer",
+    "description": "Easy deployer for web projects",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mike de Vrind",
+            "email": "mike@u-lab.nl"
+        }
+    ],
+    "require": {
+        "php" : ">=5.5.9",
+        "laravelcollective/remote": "5.*",
+        "illuminate/support": "5.*"
+    },
+    "autoload": {
+        "psr-4": {
+          "MikeVrind\\Deployer\\": "src/"
+        }
+    },
+    "extra": {
+      "branch-alias": {
+        "dev-master": "1.0-dev"
+      }
+    }
+}
+
