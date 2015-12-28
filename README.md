@@ -1,4 +1,8 @@
 # Deployer
+[![License](https://poser.pugx.org/mikevrind/deployer/license.svg)](https://packagist.org/packages/mikevrind/deployer)
+[![Latest Stable Version](https://poser.pugx.org/mikevrind/deployer/v/stable.svg)](https://packagist.org/packages/mikevrind/deployer)
+[![Total Downloads](https://poser.pugx.org/mikevrind/deployer/downloads.svg)](https://packagist.org/packages/mikevrind/deployere)
+
 Use this package to automate the deployment process of your project. Just follow the installation instructions.
 Don't forget to check the configuration file for the deployment options!
 
