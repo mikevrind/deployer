@@ -3,7 +3,7 @@
 [![Latest Stable Version](https://poser.pugx.org/mikevrind/deployer/v/stable.svg)](https://packagist.org/packages/mikevrind/deployer)
 [![Total Downloads](https://poser.pugx.org/mikevrind/deployer/downloads.svg)](https://packagist.org/packages/mikevrind/deployere)
 
-Use this package to automate the deployment process of your project. Just follow the installation instructions.
+Use this package to automate the deployment process of your Laravel project. Just follow the installation instructions.
 Don't forget to check the configuration file for the deployment options!
 
 ## Installation
@@ -14,7 +14,7 @@ Require this package with composer:
 composer require mikevrind/deployer
 ```
 
-After updating composer, add the ServiceProvider to the providers array in config/app.php
+After updating composer, add the DeployerServiceProvider to the providers array in config/app.php
 
 ```
 MikeVrind\Deployer\DeployerServiceProvider::class,
@@ -55,7 +55,7 @@ DEPLOYER_REMOTE_KEYPHRASE=
 ```
 
 ## Webhook configuration
-Open your project git remote set-url originand go to Settings -> Web hooks. This package listens to the ```_deployer/deploy``` route.  
+Open your project and go to Settings -> Web hooks. This package listens to the ```_deployer/deploy``` route.  
 So add something like ```http(s)://www.domain.tld/_deployer/deploy``` as the URL.  
 In most cases, the ```Push events``` trigger will be oke to use. Now add the new webhook and you're done!
 
