@@ -5,7 +5,7 @@
 	use Illuminate\Routing\Controller;
 	use MikeVrind\Deployer\Deployer;
 
-	class deployController extends Controller
+	class DeployController extends Controller
 	{
 
 		/**
