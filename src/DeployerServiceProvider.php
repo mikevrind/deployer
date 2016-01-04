@@ -40,7 +40,7 @@
 			$routeConfig = [
 				'namespace'  => 'MikeVrind\Deployer\Controllers',
 				'prefix'     => '_deployer',
-				'middleware' => 'MikeVrind\Deployer\Middleware\Deployer',
+				'middleware' => 'MikeVrind\Deployer\Middleware\DeployerMiddleware',
 			];
 
 			$this->getRouter()->group( $routeConfig, function ( $router )

@@ -3,7 +3,7 @@
 use Closure;
 use Illuminate\Contracts\Foundation\Application;
 
-class Deployer
+class DeployerMiddleware
 {
 
     /**
