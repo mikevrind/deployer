@@ -76,7 +76,7 @@
 
             'branch'     => env( 'DEPLOYER_REPO_BRANCH', 'master' ),
             'project_id' => env( 'DEPLOYER_REPO_PROJECT_ID', 1 ),
-            'repository' => env( 'DEPLOYER_REPO_REPOSITORY', 'git@git.u-lab.nl/group/project.git' ),
+            'repository' => env( 'DEPLOYER_REPO_REPOSITORY', 'git@git.domain.tld/group/project.git' ),
 
         ],
 
