@@ -69,7 +69,7 @@
 			# Check if there are any commands to execute
 			if( empty( $commands ) )
 			{
-				return $this->setErrorMessage( 'No commands where given to execute' );
+				return $this->setErrorMessage( 'No commands were given to execute' );
 			}
 
 			# Try to execute the commands
