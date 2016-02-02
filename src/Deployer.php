@@ -52,6 +52,7 @@
 			$this->app['config']->set( 'remote.connections.production.key', $this->app['config']->get( 'deployer.remote_connection.key' ) );
 			$this->app['config']->set( 'remote.connections.production.keytext', $this->app['config']->get( 'deployer.remote_connection.keytext' ) );
 			$this->app['config']->set( 'remote.connections.production.keyphrase', $this->app['config']->get( 'deployer.remote_connection.keyphrase' ) );
+			$this->app['config']->set( 'remote.connections.production.timeout', $this->app['config']->get( 'deployer.remote_connection.timeout' ) );
 		}
 
 		/**
@@ -122,9 +123,9 @@
 				}
 
 				$message->subject(
-					$this->request->input('repository.name', 'Unknown project') .
-					' ['.$this->app['config']->get( 'deployer.repository.branch' ).'] has been deployed by ' .
-					$this->request->input('user_name', 'John Doe')
+					$this->request->input( 'repository.name', 'Unknown project' ) .
+					' [' . $this->app['config']->get( 'deployer.repository.branch' ) . '] has been deployed by ' .
+					$this->request->input( 'user_name', 'John Doe' )
 				);
 
 			} );
