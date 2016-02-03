@@ -19,11 +19,20 @@
 
 			if ( $deployer->deploy() )
 			{
-				return response('Deployment successful', 200);
+
+				return response([
+					'status' => 200,
+					'message' => 'deployment successful'
+				], 200);
+
 			}
 			else
 			{
-				return response($deployer->getErrorMessage(), 503);
+				return response([
+					'status' => 503,
+					'message' => $deployer->getErrorMessage()
+				], 503);
+
 			}
 
 		}
