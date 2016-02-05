@@ -1,6 +1,6 @@
 <?php
 
-	namespace MikeVrind\Deployer\Controllers;
+	namespace MikeVrind\Deployer\Console;
 
 	use Illuminate\Console\Command;
 	use MikeVrind\Deployer\Deployer;
