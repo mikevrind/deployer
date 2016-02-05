@@ -25,12 +25,11 @@
 			$configPath = __DIR__ . '/../config/deployer.php';
 			$this->mergeConfigFrom( $configPath, 'deployer' );
 
-			$this->app['command.deployer.deploy'] = $this->app->share(
-				function ($app) {
-					return new Console\DeployCommand();
-				}
-			);
-			$this->commands(array('command.debugbar.clear'));
+			$this->app->singleton('deployer.deploy', function ($app) {
+				return new Console\DeployCommand();
+			});
+
+			$this->commands(['deployer.deploy']);
 
 		}
 
@@ -82,7 +81,7 @@
 		 */
 		public function provides()
 		{
-			return array('deployer', 'command.deployer.deploy');
+			return [ 'deployer', 'command.deployer.deploy' ];
 		}
 
 	}
