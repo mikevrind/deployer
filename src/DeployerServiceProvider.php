@@ -24,6 +24,14 @@
 		{
 			$configPath = __DIR__ . '/../config/deployer.php';
 			$this->mergeConfigFrom( $configPath, 'deployer' );
+
+			$this->app['command.deployer.deploy'] = $this->app->share(
+				function ($app) {
+					return new Console\DeployCommand();
+				}
+			);
+			$this->commands(array('command.debugbar.clear'));
+
 		}
 
 		/**
@@ -65,6 +73,16 @@
 		protected function getRouter()
 		{
 			return $this->app['router'];
+		}
+
+		/**
+		 * Get the services provided by the provider.
+		 *
+		 * @return array
+		 */
+		public function provides()
+		{
+			return array('deployer', 'command.deployer.deploy');
 		}
 
 	}
