@@ -3,6 +3,7 @@
 	namespace MikeVrind\Deployer;
 
 	use Illuminate\Contracts\Foundation\Application;
+	use Illuminate\Contracts\Mail\Mailer;
 	use Illuminate\Http\Request;
 	use Illuminate\Mail\Message;
 	use Illuminate\Routing\Router;
@@ -68,7 +69,7 @@
 			$this->app->singleton( 'deployer.deploy', function ( $app )
 			{
 				return new Console\DeployCommand(
-					new Deployer($this->app, $this->mailer, $this->request)
+					new Deployer( $this->app, $this->mailer, $this->request )
 				);
 			} );
 
