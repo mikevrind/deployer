@@ -2,6 +2,9 @@
 
 	namespace MikeVrind\Deployer;
 
+	use Illuminate\Contracts\Foundation\Application;
+	use Illuminate\Http\Request;
+	use Illuminate\Mail\Message;
 	use Illuminate\Routing\Router;
 	use Illuminate\Support\ServiceProvider;
 
@@ -16,6 +19,44 @@
 		protected $defer = false;
 
 		/**
+		 * Holds an instance of the Mailer object
+		 *
+		 * @var Mailer
+		 */
+		private $mailer;
+
+		/**
+		 * Holds an instance of the Request object
+		 *
+		 * @var Request
+		 */
+		private $request;
+
+		/**
+		 * Holds an instance of the Deployer object
+		 *
+		 * @var Deployer
+		 */
+		private $request;
+
+
+		/**
+		 * Create a new service provider instance.
+		 *
+		 * @param Application $app
+		 * @param Mailer $mailer
+		 * @param Request $request
+		 * @param Deployer $deployer
+		 */
+		public function __construct( Application $app, Mailer $mailer, Request $request, Deployer $deployer )
+		{
+			$this->app      = $app;
+			$this->mailer   = $mailer;
+			$this->request  = $request;
+			$this->deployer = $deployer;
+		}
+
+		/**
 		 * Register the service provider.
 		 *
 		 * @return void
@@ -25,11 +66,14 @@
 			$configPath = __DIR__ . '/../config/deployer.php';
 			$this->mergeConfigFrom( $configPath, 'deployer' );
 
-			$this->app->singleton('deployer.deploy', function ($app) {
-				return new Console\DeployCommand();
-			});
+			$this->app->singleton( 'deployer.deploy', function ( $app )
+			{
+				return new Console\DeployCommand(
+					new Deployer($this->app, $this->mailer, $this->request)
+				);
+			} );
 
-			$this->commands(['deployer.deploy']);
+			$this->commands( [ 'deployer.deploy' ] );
 
 		}
 
