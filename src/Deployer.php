@@ -27,6 +27,7 @@
 		private $mailer;
 
 		/**
+		 * Holds an instance of the Request object
 		 *
 		 * @var Request
 		 */
