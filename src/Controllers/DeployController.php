@@ -14,24 +14,24 @@
 		 * @param Deployer $deployer
 		 * @return mixed
 		 */
-		public function handle(Deployer $deployer)
+		public function handle( Deployer $deployer )
 		{
 
-			if ( $deployer->deploy() )
+			if( $deployer->deploy() )
 			{
 
-				return response([
-					'status' => 200,
+				return response( [
+					'status'  => 200,
 					'message' => 'deployment successful'
-				], 200);
+				], 200 );
 
 			}
 			else
 			{
-				return response([
-					'status' => 503,
+				return response( [
+					'status'  => 503,
 					'message' => $deployer->getErrorMessage()
-				], 503);
+				], 503 );
 
 			}
 
