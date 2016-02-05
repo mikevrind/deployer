@@ -37,8 +37,7 @@
 		 *
 		 * @var Deployer
 		 */
-		private $request;
-
+		private $deployer;
 
 		/**
 		 * Create a new service provider instance.
