@@ -3,11 +3,11 @@
 	namespace MikeVrind\Deployer;
 
 	use Collective\Remote\RemoteManager;
+	use Illuminate\Config\Repository as Config;
 	use Illuminate\Contracts\Foundation\Application;
 	use Illuminate\Contracts\Mail\Mailer;
 	use Illuminate\Http\Request;
 	use Illuminate\Mail\Message;
-	use Illuminate\Config\Repository as Config;
 	use RuntimeException;
 
 	class Deployer extends RemoteManager
@@ -105,7 +105,7 @@
 				# Check if we need to e-mail the output
 				if( $this->isMailEnabled() )
 				{
-					$this->mailFailed( $e->getMessage() );
+					$this->mailFailed( [ $e->getMessage() ] );
 				}
 
 				return $this->setErrorMessage( $e->getMessage() );
