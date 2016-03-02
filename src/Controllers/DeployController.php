@@ -16,25 +16,20 @@
 		 */
 		public function handle( Deployer $deployer )
 		{
-
 			if( $deployer->deploy() )
 			{
 
-				return response( [
+				return response()->json( [
 					'status'  => 200,
-					'message' => 'deployment successful'
+					'message' => 'Deployment successful'
 				], 200 );
 
 			}
-			else
-			{
-				return response( [
-					'status'  => 503,
-					'message' => $deployer->getErrorMessage()
-				], 503 );
 
-			}
-
+			return response()->json( [
+				'status'  => 503,
+				'message' => $deployer->getErrorMessage()
+			], 503 );
 		}
 
 	}
