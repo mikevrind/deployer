@@ -22,7 +22,7 @@
 		protected $description = 'Manually execute the deploy commands without a webhook';
 
 		/**
-		 * Holds in instance of the actual Deployer
+		 * Holds an instance of the actual Deployer
 		 *
 		 * @var Deployer
 		 */
@@ -46,18 +46,16 @@
 		public function fire()
 		{
 
-			if( $this->confirm( 'Do you wish to manually run the deployer commands? [y|N]' ) )
+			if( $this->confirm( 'Do you wish to manually run the deployer commands?' ) )
 			{
 
 				if( $this->deployer->deploy() )
 				{
 					$this->info( 'Deployment successful' );
-				}
-				else
-				{
-					$this->error( $this->deployer->getErrorMessage() );
+					return;
 				}
 
+				$this->error( $this->deployer->getErrorMessage() );
 			}
 
 		}
