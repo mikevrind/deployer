@@ -7,6 +7,7 @@
 	use Illuminate\Contracts\Mail\Mailer;
 	use Illuminate\Http\Request;
 	use Illuminate\Mail\Message;
+	use Illuminate\Config\Repository as Config;
 	use RuntimeException;
 
 	class Deployer extends RemoteManager
@@ -34,6 +35,13 @@
 		private $request;
 
 		/**
+		 * Holds an instance of the Config object
+		 *
+		 * @var Config
+		 */
+		private $config;
+
+		/**
 		 * Create a new remote manager instance.
 		 *
 		 * @param Application|\Illuminate\Foundation\Application $app
@@ -45,15 +53,16 @@
 			$this->app     = $app;
 			$this->mailer  = $mailer;
 			$this->request = $request;
+			$this->config  = $this->app['config'];
 
 			# Set the config values for the remote package
-			$this->app['config']->set( 'remote.connections.production.host', $this->app['config']->get( 'deployer.remote_connection.host' ) );
-			$this->app['config']->set( 'remote.connections.production.username', $this->app['config']->get( 'deployer.remote_connection.username' ) );
-			$this->app['config']->set( 'remote.connections.production.password', $this->app['config']->get( 'deployer.remote_connection.password' ) );
-			$this->app['config']->set( 'remote.connections.production.key', $this->app['config']->get( 'deployer.remote_connection.key' ) );
-			$this->app['config']->set( 'remote.connections.production.keytext', $this->app['config']->get( 'deployer.remote_connection.keytext' ) );
-			$this->app['config']->set( 'remote.connections.production.keyphrase', $this->app['config']->get( 'deployer.remote_connection.keyphrase' ) );
-			$this->app['config']->set( 'remote.connections.production.timeout', $this->app['config']->get( 'deployer.remote_connection.timeout' ) );
+			$this->config->set( 'remote.connections.production.host', $this->config->get( 'deployer.remote_connection.host' ) );
+			$this->config->set( 'remote.connections.production.username', $this->config->get( 'deployer.remote_connection.username' ) );
+			$this->config->set( 'remote.connections.production.password', $this->config->get( 'deployer.remote_connection.password' ) );
+			$this->config->set( 'remote.connections.production.key', $this->config->get( 'deployer.remote_connection.key' ) );
+			$this->config->set( 'remote.connections.production.keytext', $this->config->get( 'deployer.remote_connection.keytext' ) );
+			$this->config->set( 'remote.connections.production.keyphrase', $this->config->get( 'deployer.remote_connection.keyphrase' ) );
+			$this->config->set( 'remote.connections.production.timeout', $this->config->get( 'deployer.remote_connection.timeout' ) );
 		}
 
 		/**
@@ -66,7 +75,7 @@
 
 			$cliResponse      = [ ];
 			$remoteConnection = $this->into( 'production' );
-			$commands         = $this->app['config']->get( 'deployer.commands' );
+			$commands         = $this->config->get( 'deployer.commands' );
 
 			# Check if there are any commands to execute
 			if( empty( $commands ) )
@@ -78,27 +87,57 @@
 			try
 			{
 
-				$remoteConnection->run( $this->app['config']->get( 'deployer.commands' ), function ( $line ) use ( &$cliResponse )
+				$remoteConnection->run( $this->config->get( 'deployer.commands' ), function ( $line ) use ( &$cliResponse )
 				{
 					$cliResponse[] = str_replace( ' ', '&nbsp;', $line );
 				} );
 
 				# Check if we need to e-mail the output
-				if( $this->app['config']->get( 'deployer.mail.enabled' ) and count( $this->app['config']->get( 'deployer.mail.recipient' ) ) > 0 )
+				if( $this->isMailEnabled() )
 				{
-					$this->mailOutput( $cliResponse );
+					$this->mailSuccess( $cliResponse );
 				}
 
-
 				return true;
-
-
 			}
 			catch( RuntimeException $e )
 			{
+				# Check if we need to e-mail the output
+				if( $this->isMailEnabled() )
+				{
+					$this->mailFailed( $e->getMessage() );
+				}
+
 				return $this->setErrorMessage( $e->getMessage() );
 			}
+		}
 
+		/**
+		 * Mail the CLI output
+		 *
+		 * @param array $response
+		 * @return mixed
+		 */
+		private function mailSuccess( array $response )
+		{
+			return $this->mailOutput(
+				$response,
+				$this->getRepositoryName() . ' [' . $this->getDeployedBranch() . '] has been deployed by ' . $this->getDeployedBy()
+			);
+		}
+
+		/**
+		 * Mail the error message
+		 *
+		 * @param array $response
+		 * @return mixed
+		 */
+		private function mailFailed( array $response )
+		{
+			return $this->mailOutput(
+				$response,
+				$this->getRepositoryName() . ' [' . $this->getDeployedBranch() . '] could not be deployed!'
+			);
 		}
 
 		/**
@@ -107,13 +146,13 @@
 		 * @param $cliResponse
 		 * @return mixed
 		 */
-		private function mailOutput( $cliResponse )
+		private function mailOutput( $cliResponse, $subject )
 		{
 
-			return $this->mailer->send( 'deployer::deployment', [ 'data' => $cliResponse ], function ( Message $message )
+			return $this->mailer->send( 'deployer::deployment', [ 'data' => $cliResponse ], function ( Message $message ) use ( $subject )
 			{
 
-				$developers = $this->app['config']->get( 'deployer.mail.recipient' );
+				$developers = $this->config->get( 'deployer.mail.recipient' );
 
 				$message->to( $developers[0] );
 				unset( $developers[0] );
@@ -123,17 +162,53 @@
 					$message->cc( $developer );
 				}
 
-				$message->subject(
-					$this->request->input( 'repository.name', 'Unknown project' ) .
-					' [' . $this->app['config']->get( 'deployer.repository.branch' ) . '] has been deployed by ' .
-					$this->request->input( 'user_name', 'John Doe' )
-				);
+				$message->subject( $subject );
 
 			} );
 		}
 
 		/**
-		 * Return the error message
+		 * Check configuration if mail is enabled and we have at least one recipient
+		 *
+		 * @return bool
+		 */
+		private function isMailEnabled()
+		{
+			return ( $this->config->get( 'deployer.mail.enabled' ) and count( $this->config->get( 'deployer.mail.recipient' ) ) > 0 );
+		}
+
+		/**
+		 * Get the branch we try to deploy
+		 *
+		 * @return mixed
+		 */
+		private function getDeployedBranch()
+		{
+			return $this->config->get( 'deployer.repository.branch' );
+		}
+
+		/**
+		 * Get the name of the repository we try to deploy
+		 *
+		 * @return mixed
+		 */
+		private function getRepositoryName()
+		{
+			return $this->request->input( 'repository.name', 'Unknown project' );
+		}
+
+		/**
+		 * Get the name of who is trying to deploy
+		 *
+		 * @return mixed
+		 */
+		private function getDeployedBy()
+		{
+			return $this->request->input( 'user_name', 'John Doe' );
+		}
+
+		/**
+		 * Get the error message
 		 *
 		 * @return mixed
 		 */
