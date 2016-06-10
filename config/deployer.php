@@ -15,6 +15,50 @@
 
 		'enabled' => env( 'DEPLOYER_ENABLED', false ),
 
+		# Default directory to run your tasks and commands in
+		# Will perform a `cd your_directory` before issuing a command
+		'base_path' => base_path(),
+
+		# Tasks to perform
+		'tasks' => [
+
+			'git_pull' => [
+
+				'mail'     => true,
+				'commands' => [
+
+					# Pull changes from the correct branch
+					'git pull origin ' . env( 'DEPLOYER_REPO_BRANCH', 'master' ),
+
+				]
+
+			],
+
+			'composer' => [
+
+				'mail'     => false,
+				'commands' => [
+
+					# Install dependencies according to the composer.lock file
+					'composer install --no-interaction',
+				]
+			],
+
+			'migrations' => [
+
+				'mail'     => false,
+				'commands' => [
+
+					# Force to run the database migrations
+					'php artisan migrate --force'
+				]
+			]
+
+		],
+
+		# Mail all task output when all tasks have been completed
+		'tasks_mail_on_completed' => true,
+
 		/*
 		|--------------------------------------------------------------------------
 		| Deploy commands
