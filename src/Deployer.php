@@ -334,7 +334,7 @@
 		 *
 		 * @return mixed
 		 */
-		private function mailFailed( array $response = '' )
+		private function mailFailed( array $response = [ ] )
 		{
 			if( empty( $response ) )
 			{
@@ -358,7 +358,7 @@
 		 *
 		 * @return mixed
 		 */
-		private function mailTaskFailed( $task, $current, $max, array $response = '' )
+		private function mailTaskFailed( $task, $current, $max, array $response = [ ] )
 		{
 			if( empty( $response ) )
 			{
