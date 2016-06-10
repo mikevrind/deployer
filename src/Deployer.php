@@ -45,8 +45,8 @@
 		 * Create a new remote manager instance.
 		 *
 		 * @param Application|\Illuminate\Foundation\Application $app
-		 * @param Mailer $mailer
-		 * @param Request $request
+		 * @param Mailer                                         $mailer
+		 * @param Request                                        $request
 		 */
 		public function __construct( Application $app, Mailer $mailer, Request $request )
 		{
@@ -144,6 +144,7 @@
 		 * Mail the output of the CLI to the given users
 		 *
 		 * @param $cliResponse
+		 *
 		 * @return mixed
 		 */
 		private function mailOutput( $cliResponse, $subject )
@@ -221,6 +222,7 @@
 		 * Set the error message
 		 *
 		 * @param $value
+		 *
 		 * @return bool
 		 */
 		public function setErrorMessage( $value )

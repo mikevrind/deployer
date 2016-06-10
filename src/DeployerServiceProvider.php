@@ -3,9 +3,9 @@
 	namespace MikeVrind\Deployer;
 
 	use Illuminate\Http\Request;
+	use Illuminate\Mail\Mailer;
 	use Illuminate\Routing\Router;
 	use Illuminate\Support\ServiceProvider;
-	use Illuminate\Mail\Mailer;
 
 	class DeployerServiceProvider extends ServiceProvider
 	{
@@ -44,7 +44,7 @@
 			$this->app->singleton( 'deployer.deploy', function ( $app )
 			{
 				return new Console\DeployCommand(
-					new Deployer($this->app, $this->mailer, $this->request)
+					new Deployer( $this->app, $this->mailer, $this->request )
 				);
 			} );
 
@@ -54,13 +54,13 @@
 		/**
 		 * Bootstrap the application events.
 		 *
-		 * @param Mailer $mailer
+		 * @param Mailer  $mailer
 		 * @param Request $request
 		 */
-		public function boot(Mailer $mailer, Request $request)
+		public function boot( Mailer $mailer, Request $request )
 		{
-			$this->mailer   = $mailer;
-			$this->request  = $request;
+			$this->mailer  = $mailer;
+			$this->request = $request;
 
 			$configPath = __DIR__ . '/../config/deployer.php';
 			$this->publishes( [ $configPath => config_path( 'deployer.php' ) ], 'config' );
