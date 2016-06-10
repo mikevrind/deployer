@@ -72,7 +72,6 @@
 			$this->mailer                = $mailer;
 			$this->request               = $request;
 			$this->config                = $this->app['config'];
-			$this->remoteConnection      = $this->into( 'production' );
 			$this->basePath              = $this->config->get( 'deployer.base_path', base_path() );
 			$this->commands              = $this->config->get( 'deployer.commands', [ ] );
 			$this->tasks                 = $this->config->get( 'deployer.tasks', [ ] );
@@ -86,6 +85,9 @@
 			$this->config->set( 'remote.connections.production.keytext', $this->config->get( 'deployer.remote_connection.keytext' ) );
 			$this->config->set( 'remote.connections.production.keyphrase', $this->config->get( 'deployer.remote_connection.keyphrase' ) );
 			$this->config->set( 'remote.connections.production.timeout', $this->config->get( 'deployer.remote_connection.timeout' ) );
+
+			# Set remote connection after configuration has been set
+			$this->remoteConnection = $this->into( 'production' );
 		}
 
 		/**
