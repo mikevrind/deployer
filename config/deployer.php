@@ -13,7 +13,51 @@
 		|
 		*/
 
-		'enabled'           => env( 'DEPLOYER_ENABLED', false ),
+		'enabled' => env( 'DEPLOYER_ENABLED', false ),
+
+		# Default directory to run your tasks and commands in
+		# Will perform a `cd your_directory` before issuing a command
+		'base_path' => base_path(),
+
+		# Tasks to perform
+		'tasks' => [
+
+			'git_pull' => [
+
+				'mail'     => true,
+				'commands' => [
+
+					# Pull changes from the correct branch
+					'git pull origin ' . env( 'DEPLOYER_REPO_BRANCH', 'master' ),
+
+				]
+
+			],
+
+			'composer' => [
+
+				'mail'     => false,
+				'commands' => [
+
+					# Install dependencies according to the composer.lock file
+					'composer install --no-interaction',
+				]
+			],
+
+			'migrations' => [
+
+				'mail'     => false,
+				'commands' => [
+
+					# Force to run the database migrations
+					'php artisan migrate --force'
+				]
+			]
+
+		],
+
+		# Mail all task output when all tasks have been completed
+		'tasks_mail_on_completed' => true,
 
 		/*
 		|--------------------------------------------------------------------------
@@ -24,7 +68,7 @@
 		|
 		*/
 
-		'commands'          => [
+		'commands' => [
 
 			# Browse to the project root folder
 			'cd ' . base_path(),
@@ -51,9 +95,9 @@
 		|
 		*/
 
-		'mail'              => [
+		'mail' => [
 
-			'enabled'   => env( 'DEPLOYER_MAIL_ENABLED', false ),
+			'enabled' => env( 'DEPLOYER_MAIL_ENABLED', false ),
 
 			'recipient' => [
 
@@ -72,7 +116,7 @@
 		|
 		*/
 
-		'repository'        => [
+		'repository' => [
 
 			'branch'     => env( 'DEPLOYER_REPO_BRANCH', 'master' ),
 			'project_id' => env( 'DEPLOYER_REPO_PROJECT_ID', 1 ),
@@ -91,12 +135,12 @@
 		*/
 
 		'remote_connection' => [
-			'host'      => env( 'DEPLOYER_REMOTE_HOST', false ),
-			'username'  => env( 'DEPLOYER_REMOTE_USER', false ),
-			'password'  => env( 'DEPLOYER_REMOTE_PWD', false ),
-			'key'       => env( 'DEPLOYER_REMOTE_KEY', false ),
-			'keytext'   => env( 'DEPLOYER_REMOTE_KEYTEXT', false ),
-			'keyphrase' => env( 'DEPLOYER_REMOTE_KEYPHRASE', false ),
+			'host'      => env( 'DEPLOYER_REMOTE_HOST', '' ),
+			'username'  => env( 'DEPLOYER_REMOTE_USER', '' ),
+			'password'  => env( 'DEPLOYER_REMOTE_PWD', '' ),
+			'key'       => env( 'DEPLOYER_REMOTE_KEY', '' ),
+			'keytext'   => env( 'DEPLOYER_REMOTE_KEYTEXT', '' ),
+			'keyphrase' => env( 'DEPLOYER_REMOTE_KEYPHRASE', '' ),
 			'timeout'   => env( 'DEPLOYER_REMOTE_TIMEOUT', 120 ),
 		],
 

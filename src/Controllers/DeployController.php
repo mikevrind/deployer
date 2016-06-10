@@ -12,6 +12,7 @@
 		 * Parse the incoming webhook to the deployer
 		 *
 		 * @param Deployer $deployer
+		 *
 		 * @return mixed
 		 */
 		public function handle( Deployer $deployer )
