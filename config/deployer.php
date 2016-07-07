@@ -16,7 +16,7 @@
 		'enabled' => env( 'DEPLOYER_ENABLED', false ),
 
 		# Default directory to run your tasks and commands in
-		# Will perform a `cd your_directory` before issuing a command
+		# Will perform a `cd base_path` before issuing a command
 		'base_path' => base_path(),
 
 		# Tasks to perform
@@ -69,18 +69,6 @@
 		*/
 
 		'commands' => [
-
-			# Browse to the project root folder
-			'cd ' . base_path(),
-
-			# Pull changes from the correct branch
-			'git pull origin ' . env( 'DEPLOYER_REPO_BRANCH', 'master' ),
-
-			# Install dependencies according to the composer.lock file
-			'composer install --no-interaction',
-
-			# Force to run the database migrations
-			'php artisan migrate --force'
 
 		],
 
