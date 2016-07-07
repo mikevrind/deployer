@@ -281,7 +281,7 @@
 					# Check if we need to e-mail the output
 					if( $this->isMailEnabled() )
 					{
-						$this->mailTaskFailed( $task, $t, $tasksCount );
+						$this->mailTaskFailed( $task, $t );
 					}
 				}
 
@@ -368,22 +368,29 @@
 		 *
 		 * @param string $task
 		 * @param int    $current
-		 * @param int    $max
 		 * @param array  $response
 		 *
 		 * @return mixed
 		 */
-		private function mailTaskFailed( $task, $current, $max, array $response = [ ] )
+		private function mailTaskFailed( $task, $current, array $response = [ ] )
 		{
 			if( empty( $response ) )
 			{
 				$response = $this->errorMessage;
 			}
 
+			$textResponse = $this->getRepositoryName() . ' [' . $this->getDeployedBranch() . '] task ' . $task;
+
+			# All available task should be mailed, so we can so a progress
+			if( $this->tasksMailable == $this->tasksCount )
+			{
+				$textResponse .= ' [' . $current . ' of ' . $this->tasksMailable . ']';
+			}
+
 			return $this->mailOutput(
 				$response,
 				# Unknown project [master] task TASK [1 of 1] could not be completed
-				$this->getRepositoryName() . ' [' . $this->getDeployedBranch() . '] task ' . $task . ' [' . $current . ' of ' . $max . '] could not be completed!'
+				$textResponse . ' could not be completed!'
 			);
 		}
 
