@@ -32,6 +32,20 @@
 		protected $remoteConnection;
 
 		/**
+		 * Hold the total task count of task that should be mailed on completion
+		 *
+		 * @var {int}
+		 */
+		protected $tasksMailable = 0;
+
+		/**
+		 * Hold the total task count
+		 *
+		 * @var {int}
+		 */
+		protected $tasksCount = 0;
+
+		/**
 		 * Hold the error message
 		 *
 		 * @var
@@ -101,6 +115,20 @@
 		}
 
 		/**
+		 * Set the error message
+		 *
+		 * @param $value
+		 *
+		 * @return bool
+		 */
+		public function setErrorMessage( $value )
+		{
+			$this->errorMessage = $value;
+
+			return false;
+		}
+
+		/**
 		 * Get the branch we try to deploy
 		 *
 		 * @return mixed
@@ -128,41 +156,6 @@
 		private function getDeployedBy()
 		{
 			return $this->request->input( 'user_name', 'John Doe' );
-		}
-
-		/**
-		 * Run the deployment process
-		 *
-		 * @return bool
-		 */
-		public function deploy()
-		{
-			$commandResult = null;
-			$taskResult    = null;
-
-			# Check if there are any commands or tasks configured to execute
-			if( empty( $this->commands ) && empty( $this->tasks ) )
-			{
-				$this->setErrorMessage( 'No commands or tasks configured to execute' );
-
-				# Check if we need to e-mail the output
-				if( $this->isMailEnabled() )
-				{
-					$this->mailFailed();
-				}
-			}
-
-			if( !empty( $this->commands ) )
-			{
-				$commandResult = $this->runCommands();
-			}
-
-			if( !empty( $this->tasks ) )
-			{
-				$taskResult = $this->runTasks();
-			}
-
-			return ( is_null( $commandResult ) || $commandResult ) && ( is_null( $taskResult ) || $taskResult );
 		}
 
 		/**
@@ -226,11 +219,24 @@
 		 */
 		private function runTasks()
 		{
-			$self = $this;
+			$this->tasksCount = 0;
+			// Get how many task should be mailed
+			foreach( $this->tasks as $task => $properties )
+			{
+				if( isset( $properties['mail'] ) && $properties['mail'] )
+				{
+					$this->tasksMailable++;
+				}
 
-			$allTasksResponse = [ ];
+				if( !empty( $properties['commands'] ) )
+				{
+					$this->tasksCount++;
+				}
+			}
+
 			$t                = 1;
-			$tasksCount       = count( $this->tasks );
+			$self             = $this;
+			$allTasksResponse = [ ];
 			$tasksCompleted   = 0;
 			foreach( $this->tasks as $task => $properties )
 			{
@@ -258,9 +264,9 @@
 					} );
 
 					# Check if we need to e-mail the output of the task
-					if( $this->isMailEnabled() && $properties['mail'] )
+					if( $this->isMailEnabled() && isset( $properties['mail'] ) && $properties['mail'] )
 					{
-						$this->mailTaskSuccess( $task, $t, $tasksCount, $taskResponse );
+						$this->mailTaskSuccess( $task, $t, $taskResponse );
 					}
 
 					$tasksCompleted++;
@@ -315,17 +321,24 @@
 		 *
 		 * @param string $task
 		 * @param int    $current
-		 * @param int    $max
 		 * @param array  $response
 		 *
 		 * @return mixed
 		 */
-		private function mailTaskSuccess( $task, $current, $max, array $response )
+		private function mailTaskSuccess( $task, $current, array $response )
 		{
+			$textResponse = $this->getRepositoryName() . ' [' . $this->getDeployedBranch() . '] task ' . $task;
+
+			# All available task should be mailed, so we can so a progress
+			if( $this->tasksMailable == $this->tasksCount )
+			{
+				$textResponse .= ' [' . $current . ' of ' . $this->tasksMailable . ']';
+			}
+
 			return $this->mailOutput(
 				$response,
 				# Unknown project [master] task TASK [1 of 1] has been completed
-				$this->getRepositoryName() . ' [' . $this->getDeployedBranch() . '] task ' . $task . ' [' . $current . ' of ' . $max . '] has been completed!'
+				$textResponse . ' has been completed!'
 			);
 		}
 
@@ -414,17 +427,38 @@
 		}
 
 		/**
-		 * Set the error message
-		 *
-		 * @param $value
+		 * Run the deployment process
 		 *
 		 * @return bool
 		 */
-		public function setErrorMessage( $value )
+		public function deploy()
 		{
-			$this->errorMessage = $value;
+			$commandResult = null;
+			$taskResult    = null;
 
-			return false;
+			# Check if there are any commands or tasks configured to execute
+			if( empty( $this->commands ) && empty( $this->tasks ) )
+			{
+				$this->setErrorMessage( 'No commands or tasks configured to execute' );
+
+				# Check if we need to e-mail the output
+				if( $this->isMailEnabled() )
+				{
+					$this->mailFailed();
+				}
+			}
+
+			if( !empty( $this->commands ) )
+			{
+				$commandResult = $this->runCommands();
+			}
+
+			if( !empty( $this->tasks ) )
+			{
+				$taskResult = $this->runTasks();
+			}
+
+			return ( is_null( $commandResult ) || $commandResult ) && ( is_null( $taskResult ) || $taskResult );
 		}
 
 	}
