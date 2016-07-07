@@ -286,7 +286,7 @@
 			}
 
 			# Mail response when all tasks have been completed
-			if( $this->isMailEnabled() && $this->tasksMailOnCompletion )
+			if( $tasksCompleted > 0 && $this->isMailEnabled() && $this->tasksMailOnCompletion )
 			{
 				$this->mailSuccess( $allTasksResponse );
 			}
