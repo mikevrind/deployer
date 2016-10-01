@@ -15,6 +15,10 @@
 
 		'enabled' => env( 'DEPLOYER_ENABLED', false ),
 
+		# Write the output of the deploy message to the storage
+		# log folder
+		'debug' => false,
+
 		# Default directory to run your tasks and commands in
 		# Will perform a `cd base_path` before issuing a command
 		'base_path' => base_path(),

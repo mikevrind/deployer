@@ -13,7 +13,8 @@
     "require": {
         "php" : ">=5.5.9",
         "laravelcollective/remote": "5.*",
-        "illuminate/support": "5.*"
+        "illuminate/support": "5.*",
+        "monolog/monolog": "1.*"
     },
     "autoload": {
         "psr-4": {
