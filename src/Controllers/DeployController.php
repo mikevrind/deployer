@@ -4,6 +4,7 @@
 
 	use Illuminate\Routing\Controller;
 	use MikeVrind\Deployer\Deployer;
+	use Monolog\Logger;
 
 	class DeployController extends Controller
 	{
@@ -17,20 +18,24 @@
 		 */
 		public function handle( Deployer $deployer )
 		{
-			if( $deployer->deploy() )
+			$deployMessage = 'Deployment successful';
+			$deployStatus  = 200;
+
+			if( !$deployer->deploy() )
 			{
+				$deployMessage = $deployer->getErrorMessage();
+				$deployStatus  = 503;
+			}
 
-				return response()->json( [
-					'status'  => 200,
-					'message' => 'Deployment successful'
-				], 200 );
-
+			if( config( 'deployer.debug', false ) )
+			{
+				( new Logger() )->addInfo( $deployMessage );
 			}
 
 			return response()->json( [
-				'status'  => 503,
-				'message' => $deployer->getErrorMessage()
-			], 503 );
+				'status'  => $deployStatus,
+				'message' => $deployMessage
+			], $deployStatus );
 		}
 
 	}
